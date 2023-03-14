@@ -114,6 +114,11 @@ animation: shake 1s;
   min-height: 100vh;
 }
 
+.home-icon {
+  width: 30px;
+  height: 30px;
+}
+
 .wrapper {
   display: grid;
   grid-template-columns: 40% 40%;
@@ -362,15 +367,25 @@ nav button {
 }
 
 .current-themes  {
-  box-shadow: inset 0 -3em 3em rgba(0, 0, 0, 0.1), 0 0 0 2px rgb(144, 144, 224),
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  height: 16rem;
+  padding: 10px;
+  box-shadow: inset 0 -3em 3em rgba(0, 0, 0, 0.1), 0 0 0 2px rgb(117, 117, 200),
   0.3em 0.3em 1em rgba(0, 0, 0, 0.3);
   padding: 10px;
   
 }
-.add-theme {
+/* .add-theme {
   box-shadow: inset 0 -3em 3em rgba(0, 0, 0, 0.1), 0 0 0 2px rgb(144,144,224),
   0.3em 0.3em 1em rgba(0, 0, 0, 0.3);
   padding: 10px;
+} */
+
+.public-info {
+  width: 220px;
 }
 
 .themes-container {
@@ -398,7 +413,7 @@ nav button {
 }
 
 .phrase-input{
-  width: 50%;
+  width: 100%;
 }
 
 .approve-grid {

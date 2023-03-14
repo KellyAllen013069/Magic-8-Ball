@@ -1,8 +1,7 @@
 import { useContext } from "react";
 import { Link } from "react-router-dom";
-
 import {AuthContext} from '../components/AuthContext'
-
+import { FaHome} from 'react-icons/fa'
 
 
 
@@ -17,7 +16,12 @@ function Navbar() {
         <div className="navbar-container">
             <nav>
                 <div className="nav-title">
-                    <Link className = "r-link" to="/">Magic 8 Ball</Link>
+                    <div>
+                        <FaHome className="home-icon"/>
+                    </div>
+                    <div>
+                        <Link className = "r-link" to="/">Magic 8 Ball</Link>
+                    </div>
                 </div>
                 
                 {authUser ? (
