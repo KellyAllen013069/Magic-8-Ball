@@ -35,7 +35,7 @@ export const AuthProvider = ({ children }) => {
             throw new Error("Failed to logout");
         }
         setAuthUser(null);
-        console.log("******HOPEFULLY LOGGED OUT");
+
     })
     .catch(error => console.error(error));
 

@@ -14,7 +14,6 @@ function MainAuth() {
     const [password, setPassword] = useState("");
     const [authMessage,setAuthMessage] = useState("");
     const {setAuthUser} = useContext(AuthContext);
-    const [isUserUpdated, setIsUserUpdated] = useState(false);
     let navigate = useNavigate();
 
     function signinLocal(e) {
@@ -45,15 +44,10 @@ function MainAuth() {
         })
         .then((res) => res.json())
         .then((data) => {
-            console.log("success coming back is " + data.success);
-            console.log("message coming back is " + data.message);
-            console.log("!!!!!!!!!!!!!!!!!return data is " + JSON.stringify(data));
-            console.log("!!!!!status is " + data.status)
             setAuthUser(data.user);
             //setIsUserUpdated(true);
             setAuthMessage(data.message);
             if (data.success==='true') {
-                console.log("it is a success now move")
                 navigate("/");
                 window.location.reload();
             }
@@ -66,11 +60,11 @@ function MainAuth() {
     }
    
     function signinGoogle() {
-        window.open("http://localhost:5001/api/authgoogle/login", "_self")
+        window.open(`${settings.serverUrl}/api/authgoogle/login`, "_self")
     }
    
     function signinGitHub() {
-        window.open("http://localhost:5001/api/authgithub/login", "_self")
+        window.open(`${settings.serverUrl}/api/authgithub/login`, "_self")
     }
 
     return (

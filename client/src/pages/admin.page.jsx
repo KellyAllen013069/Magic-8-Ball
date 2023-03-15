@@ -5,26 +5,31 @@ import settings from '../config/settings.json'
 function AdminPage() {
     let [userThemes, setUserThemes] = useState([]);
     let [currentThemeID, setCurrentThemeID] = useState("");
+    let [themeName, setThemeName] = useState("");
     let [phrases, setPhrases] = useState([]);
-    let [approve, setApprove] = useState(false);
     let [comments, setComments] = useState("");
+    let [method, setMethod] = useState("");
+    let [shouldUpdate, setShouldUpdate] = useState(false)
 
     useEffect(() => {
-     
-        fetch(`${settings.serverUrl}/api/themes/admin`)
+        fetch(`${settings.serverUrl}/api/themes/admin`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+            }
+        })
           .then((res) => res.json())
           .then((data) => {
-            console.log("data is ******" + JSON.stringify(data))
             setUserThemes(data);
           })
           .catch((err) => {
             console.error(err);
-            setUserThemes([]);
           });
       }, []);
 
-      function getPhrases(id) {
-        console.log("before fetch and theme id is" + id);
+      function getPhrases(id, name) {
+        setMethod('approval');
+        setThemeName(name);
         setCurrentThemeID(id);
         fetch(`${settings.serverUrl}/api/responses/responsesForTheme/`, {
             method: "POST",
@@ -35,12 +40,10 @@ function AdminPage() {
           })
             .then((res) => res.json())
             .then((data) => {
-              console.log("data is ******" + JSON.stringify(data))
               setPhrases(data)
             })
             .catch((err) => {
               console.error(err);
-              setUserThemes([]);
             });
       }
 
@@ -49,9 +52,10 @@ function AdminPage() {
             let reqBody = {
                 id: currentThemeID,
                 type: updatedType,
-                comments: comments
+                comments: comments,
+                approved: approval
             }
-            fetch(`${settings.serverUrl}/api/themes/admin`, {
+            fetch(`${settings.serverUrl}/api/themes/adminUpdate`, {
                 method: "PUT",
                 headers: {
                   "Content-Type": "application/json",
@@ -60,13 +64,12 @@ function AdminPage() {
             })
             .then((res) => res.json())
             .then((data) => {
-                console.log("data is ******" + JSON.stringify(data))
                 setPhrases(data)
             })
             .catch((err) => {
                 console.error(err);
-                setUserThemes([]);
             });
+            setShouldUpdate(!shouldUpdate);
       }
 
     return (
@@ -74,73 +77,87 @@ function AdminPage() {
             <div className='center'>
                 Admin Page
             </div>
+            <div className='space-small'></div>
             {userThemes.length === 0  &&
             <div>
                 There are no themes that need your approval.
             </div>
             }
-            {userThemes.length > 0 && 
-            <div>
             <div className='admin-grid'>
-                    <div className='admin-column'>
-                        <div>
-                            <table>
-                                <tbody>
-                                {userThemes.map((t) =>
-                                    <tr key={t.ThemeID} value={t.ThemeID} onClick={e => getPhrases(t.ThemeID)}>
-                                    <td> 
-                                        {t.Name}AND {t.ThemeID}
-                                    </td>
-                                    <td>
-                                        {t.Type}
-                                    </td>
-                                    </tr>
-                                )}
-                                </tbody>
-                            </table>
-                        </div>
-
-                    </div>
-                    {phrases.length > 0 && 
-                    <div className='admin-column'>
-                        <div>
-                            theme name
+                <div className='admin-column'>
+                    
+                    {userThemes.length > 0 &&
+                    <>
+                        <div className='admin-grid-title'>
+                            Select a Theme to Review
                         </div>
                         <div>
-                            <table>
-                                <tbody>
-                                    {phrases.map((p) =>
-                                        <tr key={p.ResponseID} value={p.ResponseID}>
+                                    <table className="themes-table">
+                                        <tbody>
+                                        {userThemes.map((t) =>
+                                            <tr key={t.ThemeID} value={t.ThemeID} onClick={e => getPhrases(t.ThemeID, t.Name)}>
                                             <td> 
-                                                {p.Phrase}
+                                                {t.Name}
                                             </td>
-                                        </tr>
-                                    )}
-                                </tbody>
-
-                            </table>
+                                            <td>
+                                                {t.Type}
+                                            </td>
+                                            </tr>
+                                        )}
+                                        </tbody>
+                                    </table>
+                                
                         </div>
-                    </div>
+                    </>
                     }
-            </div>
-            
-            <div className='approve-grid'>
-                <div>
-                    <label htmlFor="comments">Comments:</label>
-                </div>  
-                <div>
-                    <input type='text' id='comments' name='comments' value={comments} onChange={e => setComments(e.target.value)}/>
-                </div>  
-                <div>
-                    <button id='approve' name='approve' onClick={()=>updateTheme(true)}>Approve</button>
                 </div>
-                <div>
-                    <button id='approve' name='approve' onClick={()=>updateTheme(false)}>Deny</button>
+                <div className='admin-column'>
+                            {phrases.length > 0 && 
+                            <div>
+                                <div className='admin-grid-title-2'>
+                                    {themeName}
+                                </div>
+                                <div>
+                                    <table className='phrase-table'>
+                                        <tbody>
+                                            {phrases.map((p) =>
+                                                <tr key={p.ResponseID} value={p.ResponseID}>
+                                                    <td> 
+                                                        {p.Phrase}
+                                                    </td>
+                                                </tr>
+                                            )}
+                                        </tbody>
+
+                                    </table>
+                                </div>
+                            </div>
+                            }
+                    </div>
+            </div>
+            {method==='approval' && 
+            <div className='approve-grid'>
+                <div className='approve-grid-comments'>
+                    <div>
+                        <label htmlFor="comments">Comments:</label>
+                    </div>
+                    <div> 
+                        <input type='text' id='comments' name='comments' value={comments} onChange={e => setComments(e.target.value)}/>
+                    </div> 
+                </div>
+                <div className='approve-grid-comments'>
+                    <div>
+                        <button id='approve' name='approve' onClick={()=>updateTheme(true)}>Approve</button>
+                    </div>
+                    <div>
+                        <button id='approve' name='approve' onClick={()=>updateTheme(false)}>Deny</button>
+                    </div>
                 </div>
                 
             </div>
-            </div>
-            } 
+            }
+            
+            
         </div>
 
     )

@@ -1,4 +1,5 @@
-import React, { useState} from "react";
+import { useState, useRef} from "react";
+import {useNavigate} from 'react-router-dom';
 
 import settings from "../config/settings.json";
 
@@ -6,15 +7,18 @@ import settings from "../config/settings.json";
 function Register() {
   const [name, setName] = useState("");
   const [emailAddress, setEmailAddress] = useState("");
- 
   const [password, setPassword] = useState("");
-  const [err,setErr] = useState(null);
+  const [errMessage,setErrMessage] = useState("");
+  const nameRef = useRef(null);
+  const emailRef = useRef(null);
+  const pwdRef = useRef(null);
+  const navigate = useNavigate();
   
  
 
   function onSubmit(event) {
       event.preventDefault();
-
+      setErrMessage("");
       const reqBody = {
           name,
           emailAddress,
@@ -31,15 +35,22 @@ function Register() {
       })
       .then((res) => res.json())
       .then((data) => {
-          console.log(data);
-          setName("");
-          setEmailAddress("");
-          setPassword("");
-          setErr(null);
+          if (data.success === false) {
+            setErrMessage(data.message)
+          }
+          else {
+            setErrMessage(data.message)
+            setName("");
+            setEmailAddress("");
+            setPassword("");
+            setTimeout(() => {
+                  navigate('/login');
+              }, 1500);
+          }
       })
       .catch((err) => {
           console.error(err);
-          setErr(err);
+          setErrMessage(err);
       })
     };
 
@@ -47,24 +58,21 @@ function Register() {
   
     
     <div className="card">
-        <div className="card-body">
+        <div className="register-container">
             
             <div className="user-form">
                 <div className="message form-header">
-                   
+                   {errMessage}
                 </div>
                 <form>
                     <div className="form-item">
-                        <label htmlFor="name" className="form-label">Username</label>
-                        <input type="test" className="form-control" id="username" onChange={(e)=>setName(e.target.value)} />
+                        <input type="text" className="form-control" ref={nameRef} id="username" placeholder='Display name' onChange={(e)=>setName(e.target.value)} />
                     </div>
                     <div className="form-item">
-                        <label htmlFor="emailAddress" className="form-label">Email</label>
-                        <input type="email" className="form-control" id="emailaddress" onChange={(e)=>setEmailAddress(e.target.value)}/>
+                        <input type="email" className="form-control" ref={emailRef} id="emailaddress" placeholder='Email address'onChange={(e)=>setEmailAddress(e.target.value)}/>
                     </div>
                     <div className="form-item">
-                        <label htmlFor="password" className="form-label">Password</label>
-                        <input type="password" className="form-control" id="password" onChange={(e) => setPassword(e.target.value)}/>
+                        <input type="password" className="form-control" ref={pwdRef} id="password" placeholder="Password" onChange={(e) => setPassword(e.target.value)}/>
                     </div>
                     <div className="form-button">
                         <button onClick={e => onSubmit(e)} className="btn">Register</button>

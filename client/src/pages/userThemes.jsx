@@ -6,16 +6,17 @@ import { AuthContext } from "../components/AuthContext";
 function UserThemes() {
   const [name, setName] = useState("");
   const nameRef = useRef(null);
+  const publicRef = useRef(null);
   const [userThemes, setUserThemes] = useState([]);
   const { authUser } = useContext(AuthContext);
   const [shouldUpdate, setShouldUpdate] = useState(false);
   const [themeID, setThemeID] = useState(null);
+  const [adminComments, setAdminComments] = useState(null);
+  const [approval, setApproval] = useState(false);
   const [phrases, setPhrases] = useState([]);
   const [makePublic, setMakePublic] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [method, setMethod] = useState('add');
-  const [editTheme, setEditTheme] = useState("");
-  const [responses, setResponses] = useState([]);
   const [phrasesToUpdate, setPhrasesToUpdate] = useState([]);
   const [additionalPhraseNum, setAdditionalPhraseNum] = useState(0);
   const [additionalPhrases, setAdditionalPhrases] = useState([]);
@@ -24,7 +25,6 @@ function UserThemes() {
 
   useEffect(() => {
     if(!authUser) return;
-    console.log("authuser is *******" + JSON.stringify(authUser))
     fetch(`${settings.serverUrl}/api/themes/userThemes/`, {
       method: "POST",
       headers: {
@@ -34,12 +34,10 @@ function UserThemes() {
     })
       .then((res) => res.json())
       .then((data) => {
-        console.log("data is ******" + JSON.stringify(data))
         setUserThemes(data)
       })
       .catch((err) => {
         console.error(err);
-        setUserThemes([]);
       });
   }, [authUser, shouldUpdate]);
 
@@ -51,7 +49,6 @@ function UserThemes() {
       nameRef.current.focus();
       return;
     }
-    console.log("phrases length is " + phrases.length)
     if (phrases.length<5) {
       setErrorMessage("You must add at least 5 phrases.")
       return;
@@ -63,7 +60,7 @@ function UserThemes() {
       Type: makePublic ? 'publish' : 'private',
     }
 
-    fetch(`${settings.serverUrl}/api/themes/`, {
+    fetch(`${settings.serverUrl}/api/themes/addTheme`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -72,10 +69,7 @@ function UserThemes() {
     })
     .then((res) => res.json())
     .then((data) => {
-      console.log("!!!!adding theme return data is " + JSON.stringify(data));
-      console.log("")
       if (data.status === 'success') {
-        console.log("ARE WE EVEN GETTING HERE??????")
         const phraseReqBody = {
           themeID: data.theme.insertId,
           phrases: phrases 
@@ -90,9 +84,8 @@ function UserThemes() {
         })
         .then((res) => res.json())
         .then((data) => {
-            setName("");
+            clearFields();
             setPhrases(Array(20).fill(""));
-            console.log("!!!!adding responses return data is " + JSON.stringify(data));
         })
         .catch((err) => {
           console.error(err);
@@ -105,9 +98,7 @@ function UserThemes() {
   }
 
   function updateTheme() {
-    console.log(" RESPONSE DATA IS ****************" + JSON.stringify(responseData));
   
-
     setErrorMessage("");
   
     if (name==="") {
@@ -125,8 +116,7 @@ function UserThemes() {
       Name: name,
       Type: makePublic ? 'publish' : 'private',
     }
-  
-    fetch(`${settings.serverUrl}/api/themes/`, {
+    fetch(`${settings.serverUrl}/api/themes/updateTheme/${themeID}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -141,7 +131,6 @@ function UserThemes() {
           Phrase: response.Phrase.replace(/'/g, "''")
         }));
         setPhrasesToUpdate(phrasesToUpdate);
-        console.log("PHRASES TO UPDATE ARE" + JSON.stringify(phrasesToUpdate))
         fetch(`${settings.serverUrl}/api/responses/updateAllResponses`, {
           method: "PUT",
           headers: {
@@ -151,7 +140,7 @@ function UserThemes() {
         })
         .then((res) => res.json())
         .then((data) => {
-          console.log("!!!!updating responses return data is " + JSON.stringify(data));
+          console.log(JSON.stringify(data));
         })
         .catch((err) => {
           console.error(err);
@@ -172,7 +161,7 @@ function UserThemes() {
           })
           .then((res) => res.json())
           .then((data) => {
-            console.log("!!!!adding responses return data is " + JSON.stringify(data));
+            console.log(JSON.stringify(data));
           })
           .catch((err) => {
             console.error(err);
@@ -183,11 +172,14 @@ function UserThemes() {
     .catch((err) => {
       console.error(err);
     })
+    setMethod('add');
+    clearFields();
+    setShouldUpdate(!shouldUpdate)
+   
   }
   
 
   function onSubmit(e) {
-    console.log("IN SUBMIT");
     e.preventDefault();
 
     method==='edit' ? updateTheme() : addTheme()
@@ -195,15 +187,14 @@ function UserThemes() {
 
   function getEditTheme(id) {
     setMethod('edit');
-    console.log("need to edit theme" + id);
     setThemeID(id);
     //get theme info
-    fetch(`${settings.serverUrl}/api/themes/${id}`)
+    fetch(`${settings.serverUrl}/api/themes/byid/${id}`)
     .then(res=>res.json())
     .then(data => {
-      setEditTheme(data)
       setName(data.Name);
-      console.log("DATA RETURNED NAME IS  "+ JSON.stringify(data))
+      setAdminComments(data.AdminComments);
+      setApproval(data.AdminApproval)
       //get responses for that theme
       fetch(`${settings.serverUrl}/api/responses/responsesForTheme`,{
         'method': 'POST',
@@ -219,13 +210,40 @@ function UserThemes() {
       })
       .catch((err) => {
         console.error(err);
-        setResponseData("");
       });    
     })
   }
 
+  function removeTheme(id, name) {
+    const confirmed = window.confirm(`Are you sure you want to delete ${name} ?`);
+    if (!confirmed) return;
+    fetch(`${settings.serverUrl}/api/themes/deleteTheme/${id}`, {
+      method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+          },
+    })
+    .then(res=>res.json)
+    .then((data)=> {
+      setMethod('add');
+      setShouldUpdate(!shouldUpdate);
+    })
+    .catch(err => {
+      console.error(err);
+    })
+
+  }
+
   function updateToAdd() {
-    setMethod('add')
+    setMethod('add');
+    clearFields();
+  }
+
+  function clearFields() {
+    setName("");
+    nameRef.value = "";
+    publicRef.current.checked = false;
+    setAdminComments(null);
   }
 
   function handleChange(e, responseID) {
@@ -240,7 +258,10 @@ function UserThemes() {
 
   return (
     <div className="theme-grid">
-      <div className="themes-grid-item current-themes">
+      <div className="themes-grid-item">
+        <div className="space-small"></div>
+        <div className="current-themes">
+            
             <div className="theme-grid-item-title">
               Current Themes
             </div>
@@ -252,7 +273,7 @@ function UserThemes() {
                         <tr key={t.ThemeID} value={t.ThemeID}>
                           
                           <td>
-                            <MdDelete value={t.ThemeID}/>
+                            <MdDelete id={t.ThemeID} onClick={() => removeTheme(t.ThemeID, t.Name)}/>
                           </td>
                           <td>
                             <MdEdit id={t.ThemeID} onClick={() => getEditTheme(t.ThemeID)}/>
@@ -275,9 +296,10 @@ function UserThemes() {
             </div>
             {method ==='edit' && (
               <div>
-                <button onClick={()=>{updateToAdd()}}>Add a Theme</button>
+                <button className="default-button" onClick={()=>{updateToAdd()}}>Add a Theme</button>
               </div>
             )}
+        </div>
         </div>
         <div className="themes-grid-item add-theme" >
                       <div className="message">
@@ -305,7 +327,7 @@ function UserThemes() {
                                 {method === 'edit' ?
                                   <div>
                                   <div>
-                                       Old responses here 
+                                    
                                       {responseData.map((response) => (
                                         <div key={response.ResponseID}>
                                           <input 
@@ -323,7 +345,7 @@ function UserThemes() {
                                       ))}
                                     </div>
                                     <div>
-                                      place for new responses
+                                      
                                       {[...Array(additionalPhraseNum)].map((_, i) => (
                                     <div key={i}>
                                     <input className="phrase-input" type="text" 
@@ -351,17 +373,37 @@ function UserThemes() {
                                 </div>
                                 }
                                 <div>
-                                  <input type='checkbox' id='publicCheck' name='publicCheck' onChange={(e) => setMakePublic(!makePublic)}/>
+                                  <input type='checkbox' id='publicCheck' name='publicCheck' ref={publicRef} onChange={(e) => setMakePublic(!makePublic)}/>
                                   Public
                                 </div>
                                 <div className="public-info">
                                   Checking public will allow others to use your theme after approval.
                                 </div>
                                 <div>
-                                  <button type="submit">{method==='edit' ? `Update ` : 'Add '} Theme</button>
+                                  <button className="default-button" type="submit">{method==='edit' ? `Update ` : 'Add '} Theme</button>
                                 </div>
                           </form>
                       </div>
+                      {method==='edit' && adminComments !=="" && adminComments != null &&
+                          <div className='admin-display'>
+                            {approval ? ( 
+                              <div className="approve">
+                                Approved
+                              </div>
+                            ): (
+                              <div className="deny">
+                                Denied
+                              </div>
+                            )}
+                            <div >
+                              Admin Comments:
+                            </div>
+                            <div>
+                              {adminComments}
+                            </div>
+                          </div>
+                        }
+                    
           </div>
       </div>
       

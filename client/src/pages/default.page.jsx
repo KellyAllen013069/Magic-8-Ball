@@ -29,16 +29,43 @@ function DefaultPage() {
 
 
     function getAlThemes() {
-      fetch(`${settings.serverUrl}/api/themes/public`)
-            .then((res) => res.json())
-            .then((data) => {
-              setThemes(data);
-              setIsLoading(false);
-            })
-            .catch((err) => {
-              console.error(err);
-              setThemes("");
-            });    
+    
+      if(authUser) {
+        let reqBody = {id:authUser.id}
+        fetch(`${settings.serverUrl}/api/themes/publicAndUser`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(reqBody)
+        })
+        .then((res) => res.json())
+        .then((data) => {
+          setThemes(data);
+          setIsLoading(false);
+        })
+        .catch((err) => {
+          console.error(err);
+          setThemes("");
+        });
+      } else {
+      
+        fetch(`${settings.serverUrl}/api/themes/public`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        })
+        .then((res) => res.json())
+        .then((data) => {
+          setThemes(data);
+          setIsLoading(false);
+        })
+        .catch((err) => {
+          console.error(err);
+          setThemes("");
+        });
+      }
     }
 
     function getDefaultResponses() {
@@ -54,11 +81,8 @@ function DefaultPage() {
     function updateTheme(themeId) {
       //let currentTheme = themeSelector.current.options[themeSelector.current.selectedIndex].getAttribute("id");
       let currentTheme = themeSelector.current.selectedIndex;
-      console.log("selected index is " + themeSelector.current.selectedIndex)
-      console.log(" themes of that index is " +  themes[themeSelector.current.selectedIndex]);
       setCurrentThemeName(themes[currentTheme].Name);
       setCurrentThemeCont(themes[currentTheme].UserName)
-      console.log("themeID IS " + themeId)
       fetch(`${settings.serverUrl}/api/responses/responsesForTheme`,{
         'method': 'POST',
         'headers': {
@@ -98,10 +122,8 @@ function DefaultPage() {
           if (transcript.toLowerCase().includes("javascript")) {
             setRandomPhrase("JAVASCRIPT RULES!!!")
           }else {
-            console.log("responses is " + responses);
-            console.log("response length is " + responses.length);
+            
             let random = responses[Math.floor(Math.random()*responses.length)];
-            console.log("random is " + random)
             setRandomPhrase(`${random.Phrase}`);
           
           }
@@ -110,8 +132,6 @@ function DefaultPage() {
 
     //get 8 ball responses on initial load (when component mounts)
     useEffect( () => {
-     
-      console.log("did mount");
       getAlThemes();
       getDefaultResponses();
       setCurrentThemeName("Basic")
@@ -126,7 +146,8 @@ function DefaultPage() {
           <div className="main-page-flex center">
             
             <div className="main-page-flex">
-              <div className="fortune-header">
+              <div className="space-tiny"></div>
+              <div className="theme-selection">
                 <div>
                   Select a Theme
                 </div>
@@ -134,9 +155,10 @@ function DefaultPage() {
                   <select name="themes" id="themes" ref={themeSelector} onChange={(e) => updateTheme(e.target.value)} defaultValue="default">
                     {!isLoading &&
                       themes.map((t) => (
-                        <option key={t.ThemeID} value={t.ThemeID} id={t.Name}>
+                        <option key={t.ThemeID} value={t.ThemeID} id={t.Name} selected={t.Name === "Basic"}>
                           {t.Name}
                           {authUser && t.UserID === authUser.id ? "*" : ""}
+                          {t.Type === 'private' ? ' (private)' : ""}
                         </option>
                       ))}
                   </select>
@@ -148,16 +170,17 @@ function DefaultPage() {
               </div>
             </div>
             <div className="main-header">
-            {currentThemeName} Theme{currentThemeCont !== "" && currentThemeCont !== "developer" && currentThemeCont !== null ? ` (contributed by ${currentThemeCont})` : ""}
+            {currentThemeName} Theme{currentThemeCont !== "" && currentThemeCont !== "default" && currentThemeCont !== 'developer' && currentThemeCont !== undefined ? ` (contributed by ${currentThemeCont})` : ""}
             </div>
+            <div className="space"></div>
             <div>
-              <div className="wrapper">
+              <div className="wrapper center">
                 <div>
                   <div className="main-image">
                     <img className="ball" id="ball" alt="Magic 8 Ball" src="./images/8ball.png" />
                   </div>
                 </div>
-                <div className="fortune-containers">
+                <div className="fortune-container">
                   <div>
                     <p>Microphone: {listening ? "on" : "off"}</p>
                   </div>
