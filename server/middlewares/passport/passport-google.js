@@ -5,16 +5,14 @@ import userFunctions from "../../controllers//users.controller.js";
 import dotenv from "dotenv";
 
 passport.serializeUser((user,done)=> {
-    console.log("SERIALIZING USER IS " + JSON.stringify(user));
     done(null,user.id)
 })
 
  passport.deserializeUser((id,done)=> {
     userFunctions.findUserById(id)
     .then((user) => {
-        console.log("******deserializing user is " + JSON.stringify(user));
         done(null, user);
-    }).catch(err => console.log(err))
+    }).catch(err => console.error(err))
 
 });
 
@@ -26,15 +24,12 @@ const googleStrategy =   new GoogleStrategy({
         callbackURL: `${process.env.SERVER_URL}/api/authgoogle/redirect`,
    
 }, (accessToken, refreshToken, profile, done) => {
-     console.log('passport callback function fired');
-     console.log("profile info is " + JSON.stringify(profile));
+     
      //add use to db if not there
      //dont want to put queries here, so call something
      userFunctions.findGoogleUser(profile.id)
      .then(userData => {
-          console.log("userData IN LOOKING FOR GOOGLE USER is " + userData);
           if (!userData || userData == "") {
-            console.log("EMAIL Is " + profile.email);
             let name = profile.displayName;
             let emailAddress = "";
             let password = "";
@@ -44,8 +39,6 @@ const googleStrategy =   new GoogleStrategy({
             let newUser = {name,emailAddress,password,authType,authID,thumbnail};
             userFunctions.addUser(newUser)
                .then(userData => {
-                    console.log("ADDING USER******")
-                    console.log("from adding user, user data is " + userData.insertId);
                     userFunctions.findUserById(userData.insertId)
                     .then(user => done(null, user[0]))
                     .catch(err=>console.error(err))

@@ -6,12 +6,10 @@ const findAll = async () => {
 }
 
 const findGoogleUser = async (authID) => {
-  console.log('IN FIND GOOGLE USER');
   return await query("SELECT * FROM Users WHERE AuthType='google' AND AuthID = ?",[authID])
 }
 
 const findGitHubUser = async (authID) => {
-  console.log('IN FIND GITHUB USER');
   return await query("SELECT * FROM Users WHERE AuthType='github' AND AuthID = ?",[authID])
 }
 
@@ -29,12 +27,10 @@ const findLocalUserByEmail = async (email) => {
 
 
 const findUserByName = async (name) => {
-  console.log("finding one by name & name is " + name);
   return await query("SELECT * FROM Users where Name = ?",[name])
 }
 
 const addUser = async (user) => {
-  console.log("IN ADD USER FROM GITHUB user is " + JSON.stringify(user))
   return await query('INSERT INTO Users SET ?',[user])
 }
 

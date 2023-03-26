@@ -14,7 +14,7 @@
     "node",
     "mysql"
   ],
-  "author": "Ben Bryant",
+  "author": "Kelly Allen",
   "license": "MIT",
   "dependencies": {
     "@babel/cli": "^7.21.0",

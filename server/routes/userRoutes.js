@@ -3,11 +3,7 @@ import express from 'express';
 const userRouter = express.Router();
 
 userRouter.get('/getUser', (req, res) => {
-    req.isAuthenticated() ? console.log("AUTHENTICATED") : console.log("NOT AUTHENTICATED")
-    console.log("GETTING TO ENDPOINT")
-    //console.dir(req)
     if(req.user) {
-        console.log("*****************USER THERE**********" + JSON.stringify(req.user));
         res.status(200).json({
             success: true,
             message: "successfull",
@@ -19,13 +15,19 @@ userRouter.get('/getUser', (req, res) => {
   });
 
 userRouter.get('/logout', (req, res, next) => {
-    console.log("******TRYING TO LOG OUT")
-    //console.log("******req is " + JSON.stringify(req));
-    console.log("HERE?????/ " + req.user)
+  console.log("**********************************IN LOGOUT******************************");
     req.session.destroy();
+    console.log("***after session destroy*****");
     req.logOut();
+    console.log("******after logout********");
     res.clearCookie('connect.sid');
-    res.json({message: "logged out"});
+    console.log("***********after clearing cookie*********");
+    res.status(200).json({
+      success: true,
+      message: "logout successfull"
+    })
+    console.log("********sent msg to client");
+   
   });
 
 export default userRouter

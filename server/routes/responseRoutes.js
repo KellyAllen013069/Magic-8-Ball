@@ -4,7 +4,7 @@ import responses from "../controllers/responses.controller.js";
 
 const responseRouter = express.Router();
 
-responseRouter.get("/default/", async (req, res, next) => {
+responseRouter.get("/default", async (req, res, next) => {
         try {
                 //let {name}= req.params;
                 console.log("in finding default");
@@ -46,7 +46,7 @@ responseRouter.post("/addAllResponses", async (req, res, next) => {
         try {
                 let {themeID, phrases} = req.body
                 console.log(" themeID is " + themeID);
-                console.log("phrases are " + phrases);
+                console.log("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&phrases are " + phrases);
                 let data = await responses.addMultipleResponses(themeID, phrases)
                 res.json(data)
 

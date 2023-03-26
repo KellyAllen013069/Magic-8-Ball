@@ -2,6 +2,7 @@ import { useEffect, useState, useContext, useRef } from "react";
 import {MdEdit, MdDelete} from 'react-icons/md';
 import settings from "../config/settings.json";
 import { AuthContext } from "../components/AuthContext";
+import emailjs from '@emailjs/browser';
 
 function UserThemes() {
   const [name, setName] = useState("");
@@ -255,6 +256,8 @@ function UserThemes() {
       return response;
     }));
   }
+
+  
 
   return (
     <div className="theme-grid">

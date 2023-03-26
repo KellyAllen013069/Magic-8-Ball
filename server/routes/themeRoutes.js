@@ -3,7 +3,7 @@ import themes from "../controllers/themes.controller.js";
 
 const themeRouter = express.Router();
 
-themeRouter.get("/:id", async (req, res, next) => {
+themeRouter.get("/byid/:id", async (req, res, next) => {
     try{
         let {id} = req.params;
         let data = await themes.findByID(id);
@@ -24,8 +24,18 @@ themeRouter.get("/public", async (req, res, next) => {
     }
 });
 
+themeRouter.post("/publicAndUser", async (req, res, next) => {
+    try {
+        let {id} = req.body;
+        let data = await themes.findAllPublicAndUser(id);
+        console.log(data);
+        res.json(data);
+    } catch (err) {
+        next(err);
+    }
+});
+
 themeRouter.get("/admin", async (req,res,next) => {
-    console.log("IN ADMIN******");
     try {
         let data = await themes.findAllToPublish();
         res.json(data)
@@ -37,9 +47,7 @@ themeRouter.get("/admin", async (req,res,next) => {
 themeRouter.post("/userThemes", async (req, res, next) => {
     try {
         let {id} = req.body;
-        console.log("id is " + id);
         let data = await themes.findAllForUserID(parseInt(id))
-        console.log(data);
         res.json(data);
     } catch (err) {
         next(err);
@@ -47,10 +55,9 @@ themeRouter.post("/userThemes", async (req, res, next) => {
 });
 
 
-themeRouter.post('/', async (req, res, next) => {
+themeRouter.post('/addTheme', async (req, res, next) => {
     try {
         let theme = req.body;
-        console.log("reqbody is " + theme);
         let data = await themes.addTheme(theme);
         res.json ({
             status: 'success',
@@ -61,11 +68,10 @@ themeRouter.post('/', async (req, res, next) => {
     }
 });
 
-themeRouter.put('/', async (req, res, next) => {
+themeRouter.put('/updateTheme/:themeID', async (req, res, next) => {
     try {
-        let theme = req.body;
-        console.log("reqbody is " + theme);
-        let data = await themes.updateTheme(theme);
+        let {themeID} = req.params;
+        let data = await themes.updateTheme(req.body, themeID);
         res.json ({
             status: 'success',
             theme: data
@@ -75,15 +81,14 @@ themeRouter.put('/', async (req, res, next) => {
     }
 });
 
-themeRouter.put("/admin", async (req, res, next) => {
+themeRouter.put("/adminUpdate", async (req, res, next) => {
     try {
         let id = req.body.id;
         let theme = {
             Type: req.body.type,
-            AdminComments: req.body.comments
+            AdminComments: req.body.comments,
+            AdminApproval: req.body.approved
         }
-        console.log("id is " + id);
-        console.log("theme is " + theme);
         let data = await themes.updateTheme(theme, parseInt(id));
         res.json(data);
     } catch (err) {
@@ -92,7 +97,7 @@ themeRouter.put("/admin", async (req, res, next) => {
 
 });
 
-themeRouter.delete("/:id", async (req, res, next) => {
+themeRouter.delete("/deleteTheme/:id", async (req, res, next) => {
     try {
         let {id} = req.params;
         let data = await themes.removeTheme(parseInt(id));

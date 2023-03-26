@@ -37,17 +37,17 @@ app.use(cors(
  */
 
  const sessionStore = new MySQLStore({
-  host: 'localhost',
-  user: 'root',
-  password: 'password',
-  database: 'magic8ball',
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASS,
+  database: process.env.DB_SCHEMA,
   schema: {
     tableName: 'sessions'
   }
 });
 
 app.use(session({
-  secret: 'alsjfoaljflesfjlfjlajflj9344747',
+  secret: process.env.SESSION_SECRET,
   resave: false,
   saveUninitialized: false,
   store: sessionStore,
@@ -84,14 +84,14 @@ app.use("/api", apiRouter);
  * Sends the react app index.html for page requests
  * Only needed in production when you are not using the react dev server
  */
- /* app.use((req, res, next) => {
+/* app.use((req, res, next) => {
   try {
-    res.sendFile(join(__dirname, "../client/build/index.html"));
+    res.sendFile(path.join(__dirname, "../client/build/index.html"));
   } catch (error) {
     next(error);
   }
-}); */
-
+});
+*/
 
 
 /* app.use((req, res, next) => {
@@ -108,6 +108,6 @@ app.use("/api", apiRouter);
  * Bind the app to a specified port
  * You can access your app at http://localhost:<port>
  */
-app.listen(config.port || 5001, () =>
+app.listen(config.port || 5000, () =>
   console.log(`Server listening on port ${config.port}...`)
 );

@@ -1,7 +1,6 @@
 import query from "../db/utils.js";
 
 const findByID = async (id) => {
-    console.log("before query id is " + id)
     return await query('SELECT * FROM Themes WHERE ThemeID = ?', [id])
 }
 
@@ -13,8 +12,16 @@ const findAllForUserID = async (UserID) => {
     return await query("SELECT * FROM Themes WHERE Type='public'")
 } */
 
+const findAllPublicAndUser = async (id) => {
+    return await query(`SELECT Themes.*, Users.Name as UserName FROM Themes LEFT JOIN Users ON Themes.UserId = Users.id WHERE Themes.type='public' OR Themes.UserID=${id}`)
+}
+
+/* const findAllPublic = async () => {
+    return await query(`SELECT Themes.*, Users.Name as UserName FROM Themes LEFT JOIN Users ON Themes.UserId = Users.id WHERE Themes.type='public'`)
+} */
+
 const findAllPublic = async () => {
-    return await query("SELECT Themes.*, Users.Name as UserName FROM Themes LEFT JOIN Users ON Themes.UserId = Users.id WHERE Themes.type='public'")
+    return await query(`SELECT * FROM Themes WHERE Type='public'`)
 }
 
 const findAllToPublish = async () => {
@@ -22,7 +29,6 @@ const findAllToPublish = async () => {
 }
 
 const addTheme = async (theme) => {
-    console.log("trying to add " + theme);
     return await query("INSERT INTO Themes SET ?", [theme])
   }
 
@@ -38,6 +44,7 @@ export default {
  findByID,
  findAllForUserID,
  findAllPublic,
+ findAllPublicAndUser,
  findAllToPublish,
  addTheme,
  updateTheme,
