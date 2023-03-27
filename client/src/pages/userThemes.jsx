@@ -2,7 +2,7 @@ import { useEffect, useState, useContext, useRef } from "react";
 import {MdEdit, MdDelete} from 'react-icons/md';
 import settings from "../config/settings.json";
 import { AuthContext } from "../components/AuthContext";
-import emailjs from '@emailjs/browser';
+
 
 function UserThemes() {
   const [name, setName] = useState("");
@@ -13,6 +13,8 @@ function UserThemes() {
   const [shouldUpdate, setShouldUpdate] = useState(false);
   const [themeID, setThemeID] = useState(null);
   const [adminComments, setAdminComments] = useState(null);
+  
+  
   const [approval, setApproval] = useState(false);
   const [phrases, setPhrases] = useState([]);
   const [makePublic, setMakePublic] = useState(false);
