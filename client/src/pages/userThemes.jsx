@@ -20,7 +20,6 @@ function UserThemes() {
   const [makePublic, setMakePublic] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [method, setMethod] = useState('add');
-  const [phrasesToUpdate, setPhrasesToUpdate] = useState([]);
   const [additionalPhraseNum, setAdditionalPhraseNum] = useState(0);
   const [additionalPhrases, setAdditionalPhrases] = useState([]);
   const [responseData, setResponseData] = useState([]);
@@ -133,7 +132,6 @@ function UserThemes() {
           ResponseID: response.ResponseID,
           Phrase: response.Phrase.replace(/'/g, "''")
         }));
-        setPhrasesToUpdate(phrasesToUpdate);
         fetch(`${settings.serverUrl}/api/responses/updateAllResponses`, {
           method: "PUT",
           headers: {

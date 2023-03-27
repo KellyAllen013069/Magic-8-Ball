@@ -30,7 +30,7 @@ function DefaultPage() {
     } = useSpeechRecognition();
 
 
-    function getAlThemes() {
+    function getAllThemes() {
     
       if(authUser) {
         let reqBody = {id:authUser.id}
