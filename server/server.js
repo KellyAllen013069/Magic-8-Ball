@@ -26,7 +26,6 @@ app.use(express.urlencoded({extended: true}))
 
 app.use(cors(
   {
-    origin: "http://localhost:3000",
     credentials: true,
   }
 ));
@@ -72,7 +71,7 @@ app.use(morgan("dev"));
 /**
  * Directs incoming static asset requests to the public folder
  */
-//app.use(express.static(join(__dirname, "../client/build")));
+app.use(express.static(join(__dirname, "../client/build")));
 
 /**
  * Directs all routes starting with /api to the top level api express router
@@ -84,14 +83,13 @@ app.use("/api", apiRouter);
  * Sends the react app index.html for page requests
  * Only needed in production when you are not using the react dev server
  */
-/* app.use((req, res, next) => {
+app.use((req, res, next) => {
   try {
-    res.sendFile(path.join(__dirname, "../client/build/index.html"));
+    res.sendFile(join(__dirname, "../client/build/index.html"));
   } catch (error) {
     next(error);
   }
 });
-*/
 
 
 /* app.use((req, res, next) => {
