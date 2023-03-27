@@ -134,7 +134,7 @@ function DefaultPage() {
 
     //get 8 ball responses on initial load (when component mounts)
     useEffect( () => {
-      getAlThemes();
+      getAllThemes();
       getDefaultResponses();
       setCurrentThemeName("Basic")
     },[]);
