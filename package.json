@@ -1,6 +1,55 @@
 {
+  "name": "magic-8-ball",
+  "version": "3.0.0",
+  "description": "Magic-8-Ball deployment",
+  "type": "module",
+  "scripts": {
+    "build": "npm run build:client && npm run build:server",
+    "build:client": "cd client && npm run build",
+    "build:server": "cd server && npm run build",
+    "start": "node server/server.js"
+  },
+  "engines": {
+    "node": "14.x",
+    "npm": "6.x"
+  },
+  "keywords": [
+    "express",
+    "node",
+    "mysql"
+  ],
+  "author": "Kelly Allen",
+  "license": "MIT",
   "dependencies": {
+    "@babel/cli": "^7.21.0",
+    "@babel/core": "^7.21.0",
+    "@babel/node": "^7.20.7",
+    "@babel/plugin-transform-modules-commonjs": "^7.21.2",
+    "@babel/plugin-transform-runtime": "^7.21.0",
+    "@babel/preset-env": "^7.20.2",
+    "babel-node": "^0.0.1-security",
+    "bcryptjs": "^2.4.3",
+    "connect-flash": "^0.1.1",
+    "cookie-session": "^2.0.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "express-flash": "^0.0.2",
+    "express-mysql-session": "^2.1.8",
+    "express-session": "^1.17.3",
+    "http-errors": "^2.0.0",
+    "jsonwebtoken": "^9.0.0",
+    "morgan": "^1.10.0",
     "mysql": "^2.18.1",
-    "react-router-dom": "^6.8.2"
+    "nodemon": "^2.0.21",
+    "passport": "^0.5.3",
+    "passport-github2": "^0.1.12",
+    "passport-google-oauth20": "^2.0.0",
+    "passport-jwt": "^4.0.1",
+    "passport-local": "^1.0.0",
+    "sequelize": "^6.29.1",
+    "sequelize-auto": "^0.8.8",
+    "session": "^0.1.0",
+    "yarn": "^1.22.19"
   }
 }

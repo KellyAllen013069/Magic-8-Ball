@@ -1,5 +1,4 @@
 import {useState, useEffect} from 'react';
-import settings from '../config/settings.json'
 
 
 function AdminPage() {
@@ -12,7 +11,7 @@ function AdminPage() {
     let [shouldUpdate, setShouldUpdate] = useState(false)
 
     useEffect(() => {
-        fetch(`${settings.serverUrl}/api/themes/admin`, {
+        fetch(`/api/themes/admin`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
@@ -31,7 +30,7 @@ function AdminPage() {
         setMethod('approval');
         setThemeName(name);
         setCurrentThemeID(id);
-        fetch(`${settings.serverUrl}/api/responses/responsesForTheme/`, {
+        fetch(`/api/responses/responsesForTheme/`, {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
@@ -55,7 +54,7 @@ function AdminPage() {
                 comments: comments,
                 approved: approval
             }
-            fetch(`${settings.serverUrl}/api/themes/adminUpdate`, {
+            fetch(`/api/themes/adminUpdate`, {
                 method: "PUT",
                 headers: {
                   "Content-Type": "application/json",

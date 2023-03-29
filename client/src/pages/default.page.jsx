@@ -34,7 +34,7 @@ function DefaultPage() {
     
       if(authUser) {
         let reqBody = {id:authUser.id}
-        fetch(`${settings.serverUrl}/api/themes/publicAndUser`, {
+        fetch(`/api/themes/publicAndUser`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -52,7 +52,7 @@ function DefaultPage() {
         });
       } else {
       
-        fetch(`${settings.serverUrl}/api/themes/public`, {
+        fetch(`/api/themes/public`, {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
@@ -71,7 +71,7 @@ function DefaultPage() {
     }
 
     function getDefaultResponses() {
-      fetch(`${settings.serverUrl}/api/responses/default`)
+      fetch(`/api/responses/default`)
           .then((res) => res.json())
           .then((data) => setResponses(data))
           .catch((err) => {
@@ -85,7 +85,7 @@ function DefaultPage() {
       let currentTheme = themeSelector.current.selectedIndex;
       setCurrentThemeName(themes[currentTheme].Name);
       setCurrentThemeCont(themes[currentTheme].UserName)
-      fetch(`${settings.serverUrl}/api/responses/responsesForTheme`,{
+      fetch(`/api/responses/responsesForTheme`,{
         'method': 'POST',
         'headers': {
           'content-type': 'application/json'

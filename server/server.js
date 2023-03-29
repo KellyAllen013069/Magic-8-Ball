@@ -4,16 +4,16 @@ import cors from "cors";
 import apiRouter from "./routes/index.js";
 import config from "./config/index.js";
 import { errorHandler } from "./middlewares/errorHandler.js";
-import {join}  from 'path';
+import path from 'path';
 import passport from 'passport';
 import flash from 'connect-flash'
 import MySQLStore from 'express-mysql-session';
 import session from 'express-session';
-import connection from "./db/connection.js";
 import dotenv from 'dotenv'
 
 
 const app = express();
+dotenv.config();
 
 
 /**
@@ -26,9 +26,15 @@ app.use(express.urlencoded({extended: true}))
 
 app.use(cors(
   {
+    origin: "http://localhost:3000",
     credentials: true,
   }
 ));
+
+/**
+ * Logs incoming request information to the dev console
+ */
+ app.use(morgan("dev"));
 
 
 /**
@@ -56,6 +62,10 @@ app.use(session({
   } 
 }));
 
+/**
+ * --------------------------------------------------------------------------
+ */
+
 //use flash for passport error handling
 app.use(flash())
 
@@ -63,53 +73,36 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 
-/**
- * Logs incoming request information to the dev console
- */
-app.use(morgan("dev"));
 
-/**
- * Directs incoming static asset requests to the public folder
- */
-//app.use(express.static(join(__dirname, "../client/build")));
+// Have Node serve the files for our built React app
+app.use(express.static(path.resolve(__dirname, '../client/build')));
 
 /**
  * Directs all routes starting with /api to the top level api express router
  */
 app.use("/api", apiRouter);
 
-
-/**
- * Sends the react app index.html for page requests
- * Only needed in production when you are not using the react dev server
- */
-app.use((req, res, next) => {
-  try {
-    res.sendFile(join(__dirname, "../client/build/index.html"));
-  } catch (error) {
-    next(error);
-  }
+// All other GET requests not handled before will return our React app
+app.get('*', (req, res) => {
+  res.sendFile(path.resolve(__dirname, '../client/build', 'index.html'));
 });
 
-
-/* app.use((req, res, next) => {
-  console.log("REQUEST IS *********" + JSON.stringify(req));
-  console.log("******RESPONSE IS ****" + JSON.stringify(res));
-  //next();
-}); */
 /**
  * Error handler middleware
  */
 
- //app.use(errorHandler);
+ app.use(errorHandler);
 /**
  * Bind the app to a specified port
- * You can access your app at http://localhost:<port>
+
  */
 if (process.env.PORT) {
   app.listen(config.port || 5000, () =>
     console.log(`Server listening on port ${config.port}...`)
   );
+} else {
+  console.log("No port configured")
 }
+
 
 export default app;

@@ -1,6 +1,5 @@
 import React from 'react';
 import {useState} from 'react';
-import settings from "../config/settings.json";
 import { useContext } from "react";
 import {AuthContext} from '../components/AuthContext'
 import {useNavigate} from 'react-router-dom';
@@ -33,7 +32,7 @@ function MainAuth() {
         };
   
   
-        fetch(`${settings.serverUrl}/api/authlocal/login`, {
+        fetch(`/api/authlocal/login`, {
               method: "POST", 
               credentials: 'include',
               headers: {
@@ -60,11 +59,11 @@ function MainAuth() {
     }
    
     function signinGoogle() {
-        window.open(`${settings.serverUrl}/api/authgoogle/login`, "_self")
+        window.open(`/api/authgoogle/login`, "_self")
     }
    
     function signinGitHub() {
-        window.open(`${settings.serverUrl}/api/authgithub/login`, "_self")
+        window.open(`/api/authgithub/login`, "_self")
     }
 
     return (
