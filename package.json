@@ -9,6 +9,9 @@
     "build:server": "cd server && npm run build",
     "start": "node server/server.js"
   },
+  "engines": {
+    "node": "16.x"
+  }
   
   "keywords": [
     "express",
