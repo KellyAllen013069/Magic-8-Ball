@@ -97,7 +97,7 @@ app.get('*', (req, res) => {
 
  */
 if (process.env.PORT) {
-  app.listen(config.port || 5000, () =>
+  app.listen(config.port || 3000, () =>
     console.log(`Server listening on port ${config.port}...`)
   );
 } else {
