@@ -94,7 +94,6 @@ app.get('*', (req, res) => {
  app.use(errorHandler);
 /**
  * Bind the app to a specified port
-
  */
 if (process.env.PORT) {
   app.listen(config.port || 3000, () =>
