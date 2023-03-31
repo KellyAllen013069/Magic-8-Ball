@@ -96,7 +96,7 @@ app.get('*', (req, res) => {
  * Bind the app to a specified port
  */
 if (process.env.PORT) {
-  app.listen(config.port || 3000, () =>
+  app.listen(config.port || 8080, () =>
     console.log(`Server listening on port ${config.port}...`)
   );
 } else {
