@@ -2,7 +2,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 
 import { useContext, useState, useEffect, useRef } from "react";
-import settings from "../config/settings.json";
 import SpeechRecognition, {
   useSpeechRecognition,
 } from "react-speech-recognition";
