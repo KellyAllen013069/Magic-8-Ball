@@ -104,5 +104,4 @@ if (process.env.PORT) {
   console.log("No port configured")
 }
 
-
 export default app;
